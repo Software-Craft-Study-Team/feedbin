@@ -111,4 +111,23 @@ class EntryTest < ActiveSupport::TestCase
     })
     assert_equal("Robert Nemiroff and Jerry Bonnell", @entry.reload.author)
   end
+
+  test 'should convert timestamp format into seconds' do
+    @entry.update(data: {
+      itunes_duration: '02:03:01'
+    })
+    assert_equal(7381, @entry.audio_duration)
+  end
+
+  test 'should return itunes_duration as is if in seconds' do
+    @entry.update(data: {
+      itunes_duration: '300'
+    })
+    assert_equal(300, @entry.audio_duration)
+  end
+
+
+  test 'should return 0 audio duration if itunes_duration is missing' do
+    assert_equal(0, @entry.audio_duration)
+  end
 end
