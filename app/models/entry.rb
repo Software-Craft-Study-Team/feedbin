@@ -180,15 +180,9 @@ class Entry < ApplicationRecord
   end
 
   def audio_duration
-    seconds = 0
+    return 0 if itunes_duration.nil?
 
-    return seconds if itunes_duration.nil?
-
-    parts = itunes_duration.to_s.split(":").map(&:to_i).compact
-    parts.first(3).reverse.each_with_index do |item, index|
-      seconds += item * 60 ** index
-    end
-    seconds
+    duration_as_seconds
   end
 
   def media_duration
@@ -329,6 +323,15 @@ class Entry < ApplicationRecord
   end
 
   private
+
+  def duration_as_seconds
+    seconds = 0
+    parts = itunes_duration.to_s.split(":").map(&:to_i).compact
+    parts.first(3).reverse.each_with_index do |item, index|
+      seconds += item * 60 ** index
+    end
+    seconds
+  end
 
   def itunes_duration
     data && data["itunes_duration"]
