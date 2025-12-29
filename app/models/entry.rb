@@ -181,7 +181,7 @@ class Entry < ApplicationRecord
 
   def audio_duration
     seconds = 0
-    duration = data && data["itunes_duration"]
+    duration = itunes_duration
 
     return seconds if duration.nil?
 
@@ -330,6 +330,10 @@ class Entry < ApplicationRecord
   end
 
   private
+
+  def itunes_duration
+    data && data["itunes_duration"]
+  end
 
   def provider_metadata
     if tweet? && tweet.main_tweet
