@@ -325,12 +325,35 @@ class Entry < ApplicationRecord
   private
 
   def duration_as_seconds
-    seconds = 0
-    parts = itunes_duration.to_s.split(":").map(&:to_i).compact
-    parts.first(3).reverse.each_with_index do |item, index|
-      seconds += item * 60 ** index
+    if duration_in_HMS_format?
+      calculate_seconds_based_on_HMS_format
+    elsif duration_in_MS_format?
+      calculate_seconds_based_on_MS_format
+    else
+      itunes_duration.to_i
     end
-    seconds
+  end
+
+  def duration_in_HMS_format?
+    duration_parts.size == 3
+  end
+
+  def duration_in_MS_format?
+    duration_parts.size == 2
+  end
+
+  def calculate_seconds_based_on_HMS_format
+    hours, minutes, seconds = duration_parts
+    seconds + minutes * 60 + hours * 3600
+  end
+
+  def calculate_seconds_based_on_MS_format
+    minutes, seconds = duration_parts
+    seconds + minutes * 60
+  end
+
+  def duration_parts
+    itunes_duration.to_s.split(":").map(&:to_i).compact.first(3)
   end
 
   def itunes_duration
