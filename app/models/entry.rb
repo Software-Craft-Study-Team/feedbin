@@ -325,35 +325,7 @@ class Entry < ApplicationRecord
   private
 
   def duration_as_seconds
-    if duration_in_HMS_format?
-      calculate_seconds_based_on_HMS_format
-    elsif duration_in_MS_format?
-      calculate_seconds_based_on_MS_format
-    else
-      itunes_duration.to_i
-    end
-  end
-
-  def duration_in_HMS_format?
-    duration_parts.size == 3
-  end
-
-  def duration_in_MS_format?
-    duration_parts.size == 2
-  end
-
-  def calculate_seconds_based_on_HMS_format
-    hours, minutes, seconds = duration_parts
-    seconds + minutes * 60 + hours * 3600
-  end
-
-  def calculate_seconds_based_on_MS_format
-    minutes, seconds = duration_parts
-    seconds + minutes * 60
-  end
-
-  def duration_parts
-    itunes_duration.to_s.split(":").map(&:to_i).compact.first(3)
+    Duration.from_itunes(itunes_duration).to_seconds
   end
 
   def itunes_duration
